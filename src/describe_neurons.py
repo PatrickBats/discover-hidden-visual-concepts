@@ -15,10 +15,10 @@ parser = argparse.ArgumentParser(description='CLIP-Dissect')
 parser.add_argument("--clip_model", type=str, default="ViT-B/16", 
                     choices=['RN50', 'RN101', 'RN50x4', 'RN50x16', 'RN50x64', 'ViT-B/32', 'ViT-B/16', 'ViT-L/14'],
                    help="Which CLIP-model to use")
-parser.add_argument("--target_model", type=str, default="clip-res", 
+parser.add_argument("--target_model", type=str, default="cvcl-resnext", 
                     choices=["cvcl-resnext","cvcl-random","resnext","clip-res","dino_say_resnext50","dino_s_resnext50","dino_a_resnext50","dino_y_resnext50"],
                    help=""""Which model to dissect.""")
-parser.add_argument("--target_layers", type=str, default="front.4, front.5, front.6, back.0",
+parser.add_argument("--target_layers", type=str, default="vision_encoder.model.layer1,vision_encoder.model.layer2,vision_encoder.model.layer3,vision_encoder.model.layer4",
                     # default: conv1,layer1,layer2,layer3,layer4
                     # cvcl: vision_encoder.model.layer1,vision_encoder.model.layer2,vision_encoder.model.layer3,vision_encoder.model.layer4
                     # clip: visual.layer1,visual.layer2,visual.layer3,visual.layer4
@@ -26,7 +26,7 @@ parser.add_argument("--target_layers", type=str, default="front.4, front.5, fron
                           Follows the naming scheme of the Pytorch module used""")
 parser.add_argument("--d_probe", type=str, default="broden", 
                     choices = ["imagenet_broden", "cifar100_val", "imagenet_val", "broden", "imagenet_broden", "objects"])
-parser.add_argument("--concept_set", type=str, default="../data/broden_labels_clean.txt", help="Path to txt file containing concept set")
+parser.add_argument("--concept_set", type=str, default="data/baby+30k+konk.txt", help="Path to txt file containing concept set")
 parser.add_argument("--batch_size", type=int, default=128, help="Batch size when running CLIP/target model")
 parser.add_argument("--device", type=str, default="cuda", help="whether to use GPU/which gpu")
 parser.add_argument("--activation_dir", type=str, default="experiments/saved_activations", help="where to save activations")
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if "," in args.target_layers:
-        args.target_layers = args.target_layers.split(",")
+        args.target_layers = [layer.strip() for layer in args.target_layers.split(",")]    
     else:
         args.target_layers = [args.target_layers]
     
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     model_prefix_map = {
         "clip-res": "clip_res",
         "cvcl-resnext": "cvcl",
-        "cvcl-resnext-random": "cvcl",
+        "cvcl-resnext-random": "cvcl_rand",
         "resnext": "resnext",
         "dino_say_resnext50": "dino_say",
         "dino_s_resnext50": "dino_s", 

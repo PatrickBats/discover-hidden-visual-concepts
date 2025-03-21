@@ -2,37 +2,38 @@
 set -e
 
 # Replace with your dataset dir
-export DATA_ROOT=/Users/kexueyi/data
-cd $DATA_ROOT
+# export DATA_ROOT="/path/to/dataset"
+# cd $DATA_ROOT
+cd "/home/Dataset/xueyi/Broden"
 
 # Download Konk Lab Massive Memo dataset:
-echo "Download Konk Lab dataset"
-mkdir -p KonkLab
-pushd KonkLab
-wget --progress=bar \
-   http://olivalab.mit.edu/MM/archives/ObjectCategories.zip \
-   -O ObjectCategories.zip
-unzip ObjectCategories.zip
-rm ObjectCategories.zip
-popd
-
-# # Download broden1_224
-# if [ ! -f Broden/broden1_224/index.csv ]
-# then
-
-# echo "Downloading broden1_224"
-# mkdir -p Broden
-# pushd Broden
+# echo "Download Konk Lab dataset"
+# mkdir -p KonkLab
+# pushd KonkLab
 # wget --progress=bar \
-#    http://netdissect.csail.mit.edu/data/broden1_224.zip \
-#    -O broden1_224.zip
-# unzip broden1_224.zip
-# rm broden1_224.zip
+#    http://olivalab.mit.edu/MM/archives/ObjectCategories.zip \
+#    -O ObjectCategories.zip
+# unzip ObjectCategories.zip
+# rm ObjectCategories.zip
 # popd
 
-# fi
+# Download broden1_224
+if [ ! -f Broden/broden1_224/index.csv ]
+then
 
-# # Download ImageNet val
+echo "Downloading broden1_224"
+mkdir -p Broden
+pushd Broden
+wget --progress=bar \
+   http://netdissect.csail.mit.edu/data/broden1_224.zip \
+   -O broden1_224.zip
+unzip broden1_224.zip
+rm broden1_224.zip
+popd
+
+fi
+
+# Download ImageNet val
 # echo "Downloading ImageNet val"
 # mkdir -p ImageNet/ILSVRC2012
 # pushd ImageNet/ILSVRC2012

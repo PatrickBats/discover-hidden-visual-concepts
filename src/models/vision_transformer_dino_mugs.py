@@ -11,6 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+"""
+Copy from Emin Orhan's repo
+https://github.com/eminorhan/silicon-menagerie/blob/master/vision_transformer_dino_mugs.py
+"""
+
+
 """
 Mostly copy-paste from timm library.
 https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/vision_transformer.py

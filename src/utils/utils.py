@@ -213,10 +213,9 @@ def save_target_activations(target_model, dataset, save_name, target_layers, bat
         for images, _ in tqdm(DataLoader(dataset, batch_size, num_workers=8, pin_memory=True)):
             images = images.to(device)
             if hasattr(target_model, 'encode_image'):
-                print("Using encode_image")
-                _ = target_model.encode_image(images)
+                _ = target_model.encode_image(images.to(device))
             else:
-                _ = target_model(images) 
+                _ = target_model(images.to(device)) 
     
     # Save captured features and remove hooks
     for layer in target_layers:
@@ -298,7 +297,6 @@ def save_activations(clip_name, target_name, target_layers, d_probe,
     
     save_clip_text_features(clip_model, text, text_save_name, batch_size)
     save_clip_image_features(clip_model, data_c, clip_save_name, batch_size, device)
-    print(f"Target Model: {target_model.__class__.__name__}\n Data Len:{len(data_t)} \n Target Save Name: {target_save_name} \n Target Layers: {target_layers} \n Pool Mode: {pool_mode} \n Batch Size: {batch_size} \n Device: {device}") 
     save_target_activations(target_model, data_t, target_save_name, target_layers,
                             batch_size, device, pool_mode)
     return

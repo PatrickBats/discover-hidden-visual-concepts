@@ -14,61 +14,81 @@ class TrialPredictor:
 
     def predict(self, dataloader):
         predictions = []
+
+        if self.model_name in ['resnext', 'dino_s_resnext50']:
+            print("ResNext and DINO models have no text encoder, class text embedding not available")
+            return predictions  
+
         with torch.no_grad():
             for batch_idx, (imgs, label, foil_labels) in enumerate(tqdm(dataloader, desc="Trial Prediction")):
-                if self.model_name != 'resnext':
-                    batch_size, per_trial_img_num, channels, height, width = imgs.size()
-                    imgs = imgs.view(-1, channels, height, width)  # Flatten the trials into the batch dimension
+                # resize imgs from [batch_size, trial_size, c, h, w] to [batch_size * trial_size, c, h, w]
+                batch_size, per_trial_img_num, channels, height, width = imgs.size()
+                imgs = imgs.view(-1, channels, height, width)  # Flatten the trials into the batch dimension
 
-                    img_features = self.feature_extractor.get_img_feature(imgs)  # [batch_size*4, 512]
-                    img_features = img_features.view(batch_size, per_trial_img_num, -1)  
-                    img_features = self.feature_extractor.norm_features(img_features) # [batch_size, 4, 512]
+                img_features = self.feature_extractor.get_img_feature(imgs)  # [batch_size*4, 512]
+                img_features = img_features.view(batch_size, per_trial_img_num, -1)  
+                img_features = self.feature_extractor.norm_features(img_features) # [batch_size, 4, 512]
 
-                    txt_features = self.feature_extractor.get_txt_feature(label)  # [batch_size, 512]
-                    txt_features = self.feature_extractor.norm_features(txt_features) 
-                    txt_features = txt_features.unsqueeze(1)# [batch_size, 1,  512]
+                txt_features = self.feature_extractor.get_txt_feature(label)  # [batch_size, 512]
+                txt_features = self.feature_extractor.norm_features(txt_features) 
+                txt_features = txt_features.unsqueeze(1)# [batch_size, 1,  512]
 
-                    # Calculate the cosine similarity
-                    similarity = (100.0 * img_features @ txt_features.transpose(-2, -1)).softmax(dim=-2)  # [batch_size, 4, 1]
-                    similarity = similarity.squeeze(-1) # Remove the last dimension
-                    
-                    for i in range(batch_size):# loop each trial in the batch
-                        simil = similarity[i]  # Get the similarity scores for the i-th item in the batch
-                        predic_idx = simil.argmax().item()  # Find the index of the max similarity score for each trial
-                        trial_idx = batch_idx * batch_size + i  # get global data index, same to data[trial_idx]
+                # Calculate the cosine similarity
+                similarity = (100.0 * img_features @ txt_features.transpose(-2, -1)).softmax(dim=-2)  # [batch_size, 4, 1]
+                similarity = similarity.squeeze(-1) # Remove the last dimension
+                
+                for i in range(batch_size):# loop each trial in the batch
+                    simil = similarity[i]  # Get the similarity scores for the i-th item in the batch
+                    predic_idx = simil.argmax().item()  # Find the index of the max similarity score for each trial
+                    trial_idx = batch_idx * batch_size + i  # get global data index, same to data[trial_idx]
 
-                        predictions.append({
-                            'trial_idx': trial_idx,
-                            'predic_idx': predic_idx, # inside trial
-                            'gt_label': label[i], 
-                            'categories': [label[i]] + foil_labels[i],
-                            'similarity': simil.tolist(),
-                            'is_correct': (predic_idx == 0),
-                        })
-                else:
-                    print("ResNext not implemented, class text embedding not available")
+                    predictions.append({
+                        'trial_idx': trial_idx,
+                        'predic_idx': predic_idx, # inside trial
+                        'gt_label': label[i], 
+                        'categories': [label[i]] + foil_labels[i],
+                        'similarity': simil.tolist(),
+                        'is_correct': (predic_idx == 0),
+                    })
 
         return predictions
     
     def predict_using_neurons(self, dataloader, layers, neuron_concepts_path, top_k=1):
         predictions = []
+        print(f"Model type: {type(self.model)}")
+        print(f"Layers to hook: {layers}")
+    
         with torch.no_grad():
             for batch_idx, (imgs, label, foil_labels) in enumerate(tqdm(dataloader, desc="Trial Prediction with Neuron Concepts")):
                                 
                 # resize imgs from [batch_size, trial_size, c, h, w] to [batch_size * trial_size, c, h, w]
                 batch_size, trial_size, channels, height, width = imgs.size()
                 imgs = imgs.view(-1, channels, height, width) # [batch_size * per_trial_img_num, c, h, w]
-                
+                imgs = imgs.to(self.device)
+
                 # register hooks
                 activations, hooks = register_hooks(self.model, layers, mode='avg', trial_size=trial_size) 
 
                 # forward pass
-                _ = self.feature_extractor.get_img_feature(imgs)
-                remove_hooks(hooks)
+                if 'cvcl' in self.model_name.lower():
+                    print("Attempting direct forward pass through vision encoder...")
+                    # Make sure the model is in eval mode
+                    self.model.eval()
+                    # Try direct call to vision encoder
+                    _ = self.model.vision_encoder(imgs)
+                else:
+                    _ = self.feature_extractor.get_img_feature(imgs)  # [batch_size*4, 512]
+
+                # Debug activation values
+                for layer in activations:
+                    if activations[layer] and len(activations[layer]) > 0:
+                        act = activations[layer][0]
+                        print(f"Layer {layer} stats: min={act.min().item():.4f}, max={act.max().item():.4f}, mean={act.mean().item():.4f}")
+                        print(f"Activation device: {act.device}, Model device: {self.device}")
                
                 neurons = self.search_label_corresponding_neuron(label, neuron_concepts_path, top_k)
                 top_activated_indices, neuron_activations = self.find_top_activated_img_idx(activations, neurons)# predict upon highest activated neuron
-                activations.clear() # clear activations to save memory
+
                 
                 for i in range(batch_size):
                     predic_idx = top_activated_indices[i]  # Find the index of the max similarity score for each trial
@@ -82,6 +102,11 @@ class TrialPredictor:
                         'gt_label': label[i], 
                         'is_correct': (predic_idx == 0),
                     })
+
+
+                activations.clear() # clear activations to save memory
+                remove_hooks(hooks)
+
         return predictions
 
     def search_label_corresponding_neuron(self, label, neuron_concepts_path, top_k=1):
@@ -116,7 +141,7 @@ class TrialPredictor:
             ValueError: If no neurons are found for any item
         """
         top_activated_indices = []
-        all_img_activations = {}  # 存储每个batch item的neuron激活值
+        all_img_activations = {}  # save each batch item activations
         
         for i, neuron_list in neurons.items():
             activation_counts = defaultdict(int)

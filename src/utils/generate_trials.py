@@ -18,7 +18,7 @@ def _get_map_prefix(map_file):
     if map_file is None:
         print("Map_file is None, predicting without neuron concepts")
         return ''
-    elif map_file.endswith('description.csv'):
+    elif map_file.endswith('descriptions.csv'):
         # Read args.txt from the same directory
         args_path = os.path.join(os.path.dirname(map_file), 'args.txt')
         if not os.path.exists(args_path):
@@ -37,9 +37,11 @@ def _get_map_prefix(map_file):
             raise ValueError(f"Missing required fields: model_name='{model_name}', concept_name='{concept_name}', d_probe_name='{d_probe_name}'")
         
         # Return formatted prefix
+        print (f"Extracted prefix: {model_name}_{d_probe_name}_{concept_name}_")
         return f'{model_name}_{d_probe_name}_{concept_name}_'
+        
     else:
-        return  map_file.split('/')[-1].split('.')[0] + '_'  # neuron_concepts/cvcl_konk_baby+konk+30k.csv -> cvcl_konk_baby+konk+30k
+        return  map_file.split('/')[-1].split('.')[0] + '_'  # neuron_concepts/cvcl_objects_baby+konk+30k.csv -> cvcl_objects_baby+konk+30k
         
 class TrialGenerator:
     def __init__(self, seed, num_imgs, num_trials_per_img, class_type, map_file=None, resize=False):
@@ -164,7 +166,6 @@ def get_reported_trials(object_resize):
 
 
 def get_trials(trial_type, seed, num_img_per_trial=4, num_trials_per_image=5, class_type="full", map_file=None, object_resize=False):
-    # 添加调试信息
     # print(f"Generating trials with parameters:")
     # print(f"- trial_type: {trial_type}")
     # print(f"- seed: {seed}")

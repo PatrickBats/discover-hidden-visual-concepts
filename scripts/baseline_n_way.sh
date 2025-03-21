@@ -6,10 +6,12 @@ cd "$(dirname "$0")/.."
 seeds=(0 1 2)
 models=(
     'cvcl-resnext'
-    'cvcl-vit'
     'cvcl-resnext-random'
-    'clip'
     'clip-res'
+
+    # These 2 models are comment out as they have no text encoder, so no baseline
+    # 'resnext'   
+    # 'dino_s_resnext50'
 ) 
 device='cuda'
 num_img_per_trial=(4 8 16 32) # maxium 62, due to only have 62 classes
@@ -21,6 +23,12 @@ min_batch_size=5
 
 for model in "${models[@]}"
 do
+    # Define which class types to run based on the model
+    if [ "$model" = "cvcl-resnext" ]; then
+        class_types=("seen")  # Only use "seen" for cvcl-resnext
+    else
+        class_types=("${class_type[@]}")  # Use all class types for other models
+    fi
     for class_type in "${class_type[@]}"
     do
         for num_img in "${num_img_per_trial[@]}"

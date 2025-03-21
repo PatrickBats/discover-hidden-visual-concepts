@@ -20,3 +20,4 @@ tqdm==4.66.5
 openai-clip==1.0.1
 seaborn
 openpyxl
+scikit-image

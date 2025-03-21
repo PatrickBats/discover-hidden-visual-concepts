@@ -1,5 +1,4 @@
 import torch
-from utils.hook import register_hooks, remove_hooks
 import clip
 
 class FeatureExtractor:
@@ -11,6 +10,7 @@ class FeatureExtractor:
         self.model = model
         self.device = device
         self.model.eval()
+        self.model.to(self.device)
 
     def get_txt_feature(self, label):
         if self.model_name.startswith("stitch"):
