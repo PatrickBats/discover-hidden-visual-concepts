@@ -1,7 +1,6 @@
-"""
-This Folder is copy from Net-dissect-Lite
-Source: [NetDissect](https://github.com/CSAILVision/NetDissect-Lite)
-"""
+>This Folder was copied from Net-dissect-Lite
+>Source: [NetDissect](https://github.com/CSAILVision/NetDissect-Lite)
+
 # Network Dissection Lite in PyTorch
 
 ## Introduction

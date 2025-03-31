@@ -1,5 +1,4 @@
 from torch.utils.data import Dataset
-from torchvision.io import read_image
 import torch
 from PIL import Image
 from pathlib import Path
@@ -12,23 +11,6 @@ def get_class_names(data_root_dir):
     subfolders = [name for name in os.listdir(data_root_dir)
                 if os.path.isdir(os.path.join(data_root_dir, name))]
     return subfolders # as list of class names
-
-def get_baby_seen_class(class_names, match_type='full'):
-    with open("multimodal/vocab.json", 'r') as f:
-        vocab = set(json.load(f).keys())
-    
-    if match_type == 'full':
-        return list({class_name for class_name in class_names if class_name in vocab})
-    elif match_type == 'partial':
-        return list({class_name for class_name in class_names if set(re.compile(r'\W+').split(class_name)) & vocab})
-
-def get_baby_unseen_class(class_names, match_type='full'):
-    with open("multimodal/vocab.json", 'r') as f:
-        vocab = set(json.load(f).keys())
-    if match_type == 'full':
-        return list({class_name for class_name in class_names if class_name not in vocab})
-    elif match_type == 'partial':
-        return list({class_name for class_name in class_names if set(re.compile(r'\W+').split(class_name)) & vocab})
     
 class KonkTrialDataset(Dataset):
     def __init__(self, trials_file_path, transform=None):
@@ -40,10 +22,7 @@ class KonkTrialDataset(Dataset):
     def __getitem__(self, idx):
         trial = self.data[idx]
         imgs = []
-        
-        # supply 50% transform
-        # resize_transform = transforms.Resize((lambda size: (int(size[0] * 0.5), int(size[1] * 0.5))), interpolation=transforms.InterpolationMode.BICUBIC)
-        
+
         # Load and transform the target and foil images
         for filename in [trial["target_img_filename"]] + trial["foil_img_filenames"]:
             # ["target.jpg", "foil1.jpg", "foil2.jpg", "foil3.jpg"]
@@ -70,7 +49,6 @@ class KonkTrialDataset(Dataset):
 
 
 class KonkObjectDataset(Dataset):
-    #TODO: not ready
     def __init__(self, root_dir, transform=None, split=None):
         self.root_dir = Path(root_dir)
         self.transform = transform

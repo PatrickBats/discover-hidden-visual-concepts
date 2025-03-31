@@ -20,11 +20,9 @@ def main(args):
     ### STEP 2: Load model, and load dataset from json trial file
     model_name = args.model
     model, transform = load_model(model_name, args.seed, args.device) # seed for different checkpoint 
-    print(f"Model loaded successfully: {model_name}")
-    print(f"Model device: {next(model.parameters()).device}")
+    print(f"Model loaded: {model_name} on device: {args.device}")
     
     data = get_dataset(dataset_name='object-trial', trials_file_path=trial_path, transform=transform)
-    # print(f"Dataset size: {len(data)}")
     dataloader = DataLoader(data, batch_size=args.batch_size, shuffle=False, num_workers=1, collate_fn=trial_collate_fn)
     
     ### STEP 3: Initialize the trial classifier

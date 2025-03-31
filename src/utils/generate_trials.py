@@ -37,7 +37,7 @@ def _get_map_prefix(map_file):
             raise ValueError(f"Missing required fields: model_name='{model_name}', concept_name='{concept_name}', d_probe_name='{d_probe_name}'")
         
         # Return formatted prefix
-        print (f"Extracted prefix: {model_name}_{d_probe_name}_{concept_name}_")
+        # print (f"Extracted prefix: {model_name}_{d_probe_name}_{concept_name}_")
         return f'{model_name}_{d_probe_name}_{concept_name}_'
         
     else:

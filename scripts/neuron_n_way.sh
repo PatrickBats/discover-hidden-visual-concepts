@@ -1,23 +1,23 @@
 #!/bin/bash
-seeds=(0) # 1 2
+seeds=(0 1 2) # 1 2
 models=(
         # "cvcl-resnext" 
-        # 'cvcl-resnext-random'
+        # 'cvcl-random'
         'clip-res'
-        # 'resnext'
-        # 'dino_s_resnext50'
+        'resnext'
+        'dino_s_resnext50'
  )
 
-device="cuda:3"
-num_img_per_trial=(4) # 62 is set due to only have 62 classes  8 16 32
-class_type=("seen") # "unseen" "full"
+device="cuda:0"
+num_img_per_trial=(2 4 8 16 32) #8 16 32
+class_type=("full") # "seen" "unseen" 
 
 # neuron concepts suffix
 dataset_name="objects"
 concept_set_name="baby+30k+konk"
 csv_save_path=("./experiments/trials/results/neuron_classification.csv")
 exps_root_dir=("./experiments/trials/neurons/")
-max_batch_size=100
+max_batch_size=800
 min_batch_size=5  
 
 # model and map_file prefix

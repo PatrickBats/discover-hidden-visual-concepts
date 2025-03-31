@@ -16,6 +16,94 @@ from . import dataset_loader
 from . import similarity
 from . import model_loader
 
+import json
+import numpy as np
+import torch
+from PIL import Image
+import matplotlib.pyplot as plt
+import re
+
+def get_object_classes(data_root_dir, vocab_path="data/multimodal/vocab.json", match_type='full'):
+    """
+    Get all class names from the data directory and categorize them into seen and unseen classes
+    based on a vocabulary file.
+    
+    Parameters:
+    -----------
+    data_root_dir : str
+        Path to the directory containing class folders
+    vocab_path : str, optional
+        Path to the vocabulary JSON file, default is "data/multimodal/vocab.json"
+    match_type : str, optional
+        Type of matching to perform ('full' or 'partial'), default is 'full'
+        
+    Returns:
+    --------
+    dict
+        A dictionary containing:
+        - 'all': list of all class names
+        - 'seen': list of class names present in the vocabulary
+        - 'unseen': list of class names not present in the vocabulary
+    """
+    # Get all class names from directory
+    subfolders = [name for name in os.listdir(data_root_dir)
+                 if os.path.isdir(os.path.join(data_root_dir, name))]
+    
+    # Load vocabulary
+    with open(vocab_path, 'r') as f:
+        vocab = set(json.load(f).keys())
+    
+    # Categorize classes based on match type
+    if match_type == 'full':
+        seen_classes = [c for c in subfolders if c in vocab]
+        unseen_classes = [c for c in subfolders if c not in vocab]
+    elif match_type == 'partial':
+        seen_classes = [c for c in subfolders if set(re.compile(r'\W+').split(c)) & vocab]
+        unseen_classes = [c for c in subfolders if not set(re.compile(r'\W+').split(c)) & vocab]
+    else:
+        raise ValueError(f"Unknown match_type: {match_type}. Use 'full' or 'partial'.")
+    
+    return {
+        'all': subfolders,
+        'seen': seen_classes,
+        'unseen': unseen_classes
+    }   
+
+def read_trial_json(trial_path):
+    with open(trial_path, 'r') as f:
+        data = json.load(f)
+    return data
+
+def read_image(img_path, transform=None):
+    img = Image.open(img_path)
+    if transform is not None:
+        img = transform(img)
+        if isinstance(img, torch.Tensor):
+            img = img.permute(1, 2, 0).cpu().numpy()
+        if isinstance(img, np.ndarray) and img.shape[0] == 3:
+            img = np.transpose(img, (1, 2, 0))
+    return img
+
+def show_trial_img(trial, transform=None):
+
+    target_img = read_image(trial["target_img_filename"], transform=transform)
+    foil_imgs = [read_image(foil, transform=transform) for foil in trial["foil_img_filenames"]]
+    foil_classes = trial["foil_categories"]
+    
+    fig, axs = plt.subplots(1, 4, figsize=(16, 4))
+    
+    axs[0].imshow(target_img)
+    axs[0].set_title(f"Target: {trial['target_category']}")
+    axs[0].axis('off')
+
+    for i, (foil_img, foil_class) in enumerate(zip(foil_imgs, foil_classes)):
+        axs[i+1].imshow(foil_img)
+        axs[i+1].set_title(f"Foil {i+1}: {foil_class}")
+        axs[i+1].axis('off')
+
+    plt.tight_layout()
+    return plt.show()
+
 def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
@@ -200,13 +288,20 @@ def save_target_activations(target_model, dataset, save_name, target_layers, bat
 
     hooks = {}
     # Register hooks to capture activations
+    successful_layers = []
+    failed_layers = []
     for layer in target_layers:
         module = dict(target_model.named_modules()).get(layer)
         if module:
             hooks[layer] = module.register_forward_hook(get_activation(all_features[layer], pool_mode))
-            print(f"Hook registered for layer: {layer}")
+            successful_layers.append(layer)
         else:
-            print(f"Warning: Layer '{layer}' does not exist in the model.")
+            failed_layers.append(layer)
+    
+    if successful_layers:
+        print(f"Successfully registered hooks for layers: {', '.join(successful_layers)}")
+    if failed_layers:
+        print(f"Warning: These layers do not exist in the model: {', '.join(failed_layers)}")
 
     # Forward pass through the model to capture activations
     with torch.no_grad():

@@ -4,9 +4,9 @@ set -e
 # Replace with your dataset dir
 # export DATA_ROOT="/path/to/dataset"
 # cd $DATA_ROOT
-cd "/home/Dataset/xueyi/Broden"
+cd "/home/Dataset/xueyi"
 
-# Download Konk Lab Massive Memo dataset:
+###*  Download Konk Lab Massive Memo dataset *###
 # echo "Download Konk Lab dataset"
 # mkdir -p KonkLab
 # pushd KonkLab
@@ -17,37 +17,39 @@ cd "/home/Dataset/xueyi/Broden"
 # rm ObjectCategories.zip
 # popd
 
-# Download broden1_224
-if [ ! -f Broden/broden1_224/index.csv ]
-then
 
-echo "Downloading broden1_224"
-mkdir -p Broden
-pushd Broden
+###* Download ImageNet val *###
+echo "Downloading ImageNet val"
+mkdir -p ImageNet/ILSVRC2012
+pushd ImageNet/ILSVRC2012
 wget --progress=bar \
-   http://netdissect.csail.mit.edu/data/broden1_224.zip \
-   -O broden1_224.zip
-unzip broden1_224.zip
-rm broden1_224.zip
+   https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar \
+   -O ILSVRC2012_img_val.tar
+
+wget --progress=bar \
+   https://image-net.org/data/ILSVRC/2012/ILSVRC2012_devkit_t12.tar.gz \
+   -O ILSVRC2012_devkit_t12.tar.gz
 popd
 
-fi
 
-# Download ImageNet val
-# echo "Downloading ImageNet val"
-# mkdir -p ImageNet/ILSVRC2012
-# pushd ImageNet/ILSVRC2012
-# wget --progress=bar \
-#    https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar \
-#    -O ILSVRC2012_img_val.tar
+###* Download broden1_224 *###
+# if [ ! -f Broden/broden1_224/index.csv ]
+# then
 
+# echo "Downloading broden1_224"
+# mkdir -p Broden
+# pushd Broden
 # wget --progress=bar \
-#    https://image-net.org/data/ILSVRC/2012/ILSVRC2012_devkit_t12.tar.gz \
-#    -O ILSVRC2012_devkit_t12.tar.gz
+#    http://netdissect.csail.mit.edu/data/broden1_224.zip \
+#    -O broden1_224.zip
+# unzip broden1_224.zip
+# rm broden1_224.zip
 # popd
 
+# fi
 
-# # Download broden1_227
+
+###* Download broden1_227 *###
 # if [ ! -f Broden/broden1_227/index.csv ]
 # then
 

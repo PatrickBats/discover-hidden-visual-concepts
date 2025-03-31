@@ -1,4 +1,3 @@
-
 import os
 import torch
 from src.utils.utils import get_save_names, save_target_activations
@@ -9,13 +8,13 @@ def save_cka_activations(model_name, model, transform, layers, d_probe, batch_si
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    data = get_dataset(d_probe, transform=transform)
+    data = get_dataset(d_probe, transform=transform) # val for ImageNet val
 
     save_name, _, _ = get_save_names(clip_name = 'NA', target_name = model_name,
                                 target_layer = '{}', d_probe = d_probe, concept_set = 'NA',
                                 pool_mode=pool_mode, save_dir = save_dir)
     
-    print(f"Target Model: {model.__class__.__name__}\n Data Len:{len(data)} \n Target Save Name: {save_name} \n Target Layers: {layers} \n Pool Mode: {pool_mode} \n Batch Size: {batch_size} \n Device: {device}") 
+    # print(f"Target Model: {model.__class__.__name__}\n Data Len:{len(data)} \n Target Save Name: {save_name} \n Target Layers: {layers} \n Pool Mode: {pool_mode} \n Batch Size: {batch_size} \n Device: {device}") 
 
     save_target_activations(model, data, save_name, layers,
                             batch_size, device, pool_mode) 
@@ -25,10 +24,10 @@ def save_cka_matrix(d_probe, activation_dir, model_layers_1, model_layers_2, arg
     cka_matrix = compute_CKA_layer_matrix(
         data_name=d_probe, 
         activation_dir=activation_dir, 
-        model_name_1=args.model1, 
-        model_name_2=args.model2, 
-        model1_layers=model_layers_1,
-        model2_layers=model_layers_2)
+        model_name_y=args.model_y, 
+        model_name_x=args.model_x, 
+        model_y_layers=model_layers_1,
+        model_x_layers=model_layers_2)
     
     result_dir = args.result_dir
 
@@ -37,12 +36,23 @@ def save_cka_matrix(d_probe, activation_dir, model_layers_1, model_layers_2, arg
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
         print(f"Created directory: {result_dir}")
+    
+    # Create a dictionary with matrix and metadata
+    cka_data = {
+        'matrix': cka_matrix,
+        'model_y': args.model_y,  # Y-axis model
+        'model_x': args.model_x,  # X-axis model
+        'model_y_layers': model_layers_1,  # Y-axis layer names
+        'model_x_layers': model_layers_2,  # X-axis layer names
+        'dataset': d_probe
+    }
+    
     save_path = os.path.join(
         result_dir, 
-        f"mat_{args.model1}_{args.model2}_{d_probe}_{timestamp}.pt"
+        f"mat_{args.model_y}_{args.model_x}_{d_probe}_{timestamp}.pt"
     )
-    torch.save(cka_matrix, save_path)
-    print(f"CKA matrix saved to: {save_path}")
+    torch.save(cka_data, save_path)
+    print(f"CKA matrix and model information saved to: {save_path}")
 
 
 def get_layer_prefix(model):
@@ -87,28 +97,28 @@ def compute_CKA_similarity(X, Y):
 
     return CKA_similarity
 
-def compute_CKA_layer_matrix(data_name, activation_dir, model_name_1, model_name_2, model1_layers, model2_layers):
+def compute_CKA_layer_matrix(data_name, activation_dir, model_name_y, model_name_x, model_y_layers, model_x_layers):
     """Compute CKA similarity matrix between two models' layers
     Args:
         data_name: Name of dataset used
         activation_dir: Directory containing saved activations
-        model_name_1: Name of first model, y axis of matrix
-        model_name_2: Name of second model, x axis of matrix
-        model1_layers: List of layer names from first model
-        model2_layers: List of layer names from second model
+        model_name_y: Name of first model, y axis of matrix
+        model_name_x: Name of second model, x axis of matrix
+        model_y_layers: List of layer names from first model
+        model_x_layers: List of layer names from second model
     """
-    num_layers_1 = len(model1_layers)
-    num_layers_2 = len(model2_layers)
+    num_layers_1 = len(model_y_layers)
+    num_layers_2 = len(model_x_layers)
     cka_matrix = torch.zeros((num_layers_1, num_layers_2))
     
-    for i, layer1 in enumerate(model1_layers):
+    for i, layer1 in enumerate(model_y_layers):
         # Load activations from model 1
-        activation_1 = os.path.join(activation_dir, f"{data_name}_{model_name_1}_{layer1}.pt")
+        activation_1 = os.path.join(activation_dir, f"{data_name}_{model_name_y}_{layer1}.pt")
         feat_1 = torch.load(activation_1, map_location='cpu').float()
 
-        for j, layer2 in enumerate(model2_layers):
+        for j, layer2 in enumerate(model_x_layers):
             # Load activations from model 2
-            activation_2 = os.path.join(activation_dir, f"{data_name}_{model_name_2}_{layer2}.pt")
+            activation_2 = os.path.join(activation_dir, f"{data_name}_{model_name_x}_{layer2}.pt")
             feat_2 = torch.load(activation_2, map_location='cpu').float()
 
             # Compute CKA similarity between layers

@@ -9,8 +9,9 @@ data_root = os.getenv("DATA_ROOT", default="/home/Dataset/xueyi")
 
 DATASET_ROOTS = {
     # "imagenet": os.path.join(data_root, "ImageNet/ILSVRC2012") if not data_root.startswith("/home/Dataset/xueyi") else "/home/Dataset/Image_Classification/ILSVRC2012",
-    "imagenet": "/home/Dataset/Image_Classification/ILSVRC2012/val",
-    "broden": os.path.join(data_root, "broden1_224/images"),
+    "imagenet": "/home/Dataset/xueyi/ImageNet/ILSVRC2012",
+    "broden": os.path.join(data_root, "Broden/broden1_224/images"),
+    "broden_net-dissect": os.path.join(data_root, "Broden/broden1_224"),
     # "objects": os.path.join(data_root, "KonkLab/17-objects"),
     "objects": "/home/localstorage/xueyi/KonkLab/17-objects",
 }
@@ -26,7 +27,7 @@ def get_dataset(dataset_name: str, **kwargs) -> Dataset:
     Note: The original ImageNet test set (~100K images) remains private 
     and is not available in public distributions.
     """
-    print(f"Loading dataset: {dataset_name}")
+    # print(f"Dataset: {dataset_name}")
     
     if dataset_name == 'objects':
         return KonkObjectDataset(root_dir=DATASET_ROOTS['objects'], transform=kwargs['transform'])

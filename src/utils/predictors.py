@@ -55,8 +55,6 @@ class TrialPredictor:
     
     def predict_using_neurons(self, dataloader, layers, neuron_concepts_path, top_k=1):
         predictions = []
-        print(f"Model type: {type(self.model)}")
-        print(f"Layers to hook: {layers}")
     
         with torch.no_grad():
             for batch_idx, (imgs, label, foil_labels) in enumerate(tqdm(dataloader, desc="Trial Prediction with Neuron Concepts")):
@@ -70,21 +68,7 @@ class TrialPredictor:
                 activations, hooks = register_hooks(self.model, layers, mode='avg', trial_size=trial_size) 
 
                 # forward pass
-                if 'cvcl' in self.model_name.lower():
-                    print("Attempting direct forward pass through vision encoder...")
-                    # Make sure the model is in eval mode
-                    self.model.eval()
-                    # Try direct call to vision encoder
-                    _ = self.model.vision_encoder(imgs)
-                else:
-                    _ = self.feature_extractor.get_img_feature(imgs)  # [batch_size*4, 512]
-
-                # Debug activation values
-                for layer in activations:
-                    if activations[layer] and len(activations[layer]) > 0:
-                        act = activations[layer][0]
-                        print(f"Layer {layer} stats: min={act.min().item():.4f}, max={act.max().item():.4f}, mean={act.mean().item():.4f}")
-                        print(f"Activation device: {act.device}, Model device: {self.device}")
+                _ = self.feature_extractor.get_img_feature(imgs)  # [batch_size*4, 512]
                
                 neurons = self.search_label_corresponding_neuron(label, neuron_concepts_path, top_k)
                 top_activated_indices, neuron_activations = self.find_top_activated_img_idx(activations, neurons)# predict upon highest activated neuron

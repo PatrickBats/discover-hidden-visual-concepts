@@ -9,10 +9,10 @@ import torch
 import sys
 
 def show_available_models():
-    available_models = ['cvcl-resnext','cvcl-vit','cvcl-resnext-random',
+    available_models = ['cvcl-resnext', 'cvcl-random',
                         'resnext', 'resnext-random',
                         'clip','clip-res',
-                        'dino_say_resnext50', 'dino_s_resnext50', 'dino_a_resnext50', 'dino_y_resnext50', # dino randomize is same as resnext-random
+                        'dino_s_resnext50', 
                         ]
     return available_models
 
@@ -123,8 +123,6 @@ def get_default_full_layers(model_name):
         return ['layer1', 'layer2', 'layer3', 'layer4']
     elif model_name.startswith("dino"):
         return ['layer1', 'layer2', 'layer3', 'layer4']
-    elif model_name == 'cvcl-clip-layer3': #! CVCL stitched model
-        return ['front.4','front.5','front.6','back.0']
     else:
         raise ValueError(f"No predefined layer from model: {model_name}")
     
