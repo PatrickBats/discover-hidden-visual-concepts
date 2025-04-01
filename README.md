@@ -78,8 +78,6 @@ Please be aware that [net-dissect](https://github.com/CSAILVision/NetDissect-Lit
 
 While the results may not be exactly same as trials are influenced by device variation (even with fixed random seeds), overall trends should be consistent.
 
-For neuron-based classification, We provide reference experiment results under `experiments/trials/results` with `ref_` prefix.
-
 ## Notes
 
 ### Customization

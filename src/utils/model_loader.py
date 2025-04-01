@@ -115,7 +115,7 @@ def load_model(model_name, seed=0, device='cuda'):
 
 
 def get_default_full_layers(model_name):
-    if model_name == 'cvcl-resnext' or model_name == 'cvcl-resnext-random':
+    if model_name == 'cvcl-resnext' or model_name == 'cvcl-random':
         return ['vision_encoder.model.layer1', 'vision_encoder.model.layer2', 'vision_encoder.model.layer3', 'vision_encoder.model.layer4']
     elif model_name == 'clip-res':
         return ['visual.layer1', 'visual.layer2', 'visual.layer3', 'visual.layer4']

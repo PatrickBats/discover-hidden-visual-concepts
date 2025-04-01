@@ -1,16 +1,16 @@
 #!/bin/bash
-seeds=(0 1 2) # 1 2
+seeds=(0 1 2)
 models=(
-        # "cvcl-resnext" 
-        # 'cvcl-random'
+        "cvcl-resnext" 
+        'cvcl-random'
         'clip-res'
         'resnext'
         'dino_s_resnext50'
  )
 
 device="cuda:0"
-num_img_per_trial=(2 4 8 16 32) #8 16 32
-class_type=("full") # "seen" "unseen" 
+num_img_per_trial=(2 4 8 16 32) 
+class_type=("seen" "unseen" "full") 
 
 # neuron concepts suffix
 dataset_name="objects"
@@ -23,13 +23,10 @@ min_batch_size=5
 # model and map_file prefix
 declare -A model_map_prefixes=(
     ["clip-res"]="clip_res"
-    ["cvcl-resnext-random"]="cvcl"
+    ["cvcl-random"]="cvcl-random"
     ["cvcl-resnext"]="cvcl"
     ["resnext"]="resnext"
-    ["dino_say_resnext50"]="dino_say"
     ["dino_s_resnext50"]="dino_s"
-    ["dino_a_resnext50"]="dino_a"
-    ["dino_y_resnext50"]="dino_y"
 )
 
 for class_type in "${class_type[@]}"

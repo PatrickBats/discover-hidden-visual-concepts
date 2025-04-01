@@ -87,12 +87,9 @@ if __name__ == '__main__':
     model_prefix_map = {
         "clip-res": "clip_res",
         "cvcl-resnext": "cvcl",
-        "cvcl-resnext-random": "cvcl_rand",
+        "cvcl-random": "cvcl-random",
         "resnext": "resnext",
-        "dino_say_resnext50": "dino_say",
         "dino_s_resnext50": "dino_s", 
-        "dino_a_resnext50": "dino_a",
-        "dino_y_resnext50": "dino_y"
     }
     
     model_prefix = model_prefix_map.get(args.target_model, args.target_model)

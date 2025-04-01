@@ -5,15 +5,13 @@ from torch.utils.data import Dataset, ConcatDataset
 from src.utils.object_dataset import KonkObjectDataset, KonkTrialDataset  
 
 # Dataset root
-data_root = os.getenv("DATA_ROOT", default="/home/Dataset/xueyi")
+data_root = os.getenv("DATA_ROOT", default="/home/Dataset/")
 
 DATASET_ROOTS = {
-    # "imagenet": os.path.join(data_root, "ImageNet/ILSVRC2012") if not data_root.startswith("/home/Dataset/xueyi") else "/home/Dataset/Image_Classification/ILSVRC2012",
-    "imagenet": "/home/Dataset/xueyi/ImageNet/ILSVRC2012",
+    "imagenet": os.path.join(data_root, "ImageNet/ILSVRC2012"),
     "broden": os.path.join(data_root, "Broden/broden1_224/images"),
     "broden_net-dissect": os.path.join(data_root, "Broden/broden1_224"),
-    # "objects": os.path.join(data_root, "KonkLab/17-objects"),
-    "objects": "/home/localstorage/xueyi/KonkLab/17-objects",
+    "objects": os.path.join(data_root, "KonkLab/17-objects"),
 }
 
 def get_dataset(dataset_name: str, **kwargs) -> Dataset:
