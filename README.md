@@ -18,8 +18,8 @@ Key findings:
 ### Dataset
 You may simply run `dataset_setup.sh`
 - Konkle Lab Dataset: [download here](http://olivalab.mit.edu/MM/archives/ObjectCategories.zip)  
-- Broden Dataset: [download here](http://netdissect.csail.mit.edu/data/broden1_227.zip) (for [net-dissect](https://netdissect.csail.mit.edu) in [experiment 3](#3-run-layer-wise-analysis))
-- ImageNet Validation set: [download here](http://image-net.org/synset?wnid=n01440764) (for [CKA](https://arxiv.org/pdf/1905.00414) in [experiment 3](#3-run-layer-wise-analysis))
+- Broden Dataset: [download here](http://netdissect.csail.mit.edu/data/broden1_227.zip) (for [net-dissect](https://netdissect.csail.mit.edu) in [experiment 3](#experiment-3-layer-wise-analysis))
+- ImageNet Validation set: [download here](http://image-net.org/synset?wnid=n01440764) (for [CKA](https://arxiv.org/pdf/1905.00414) in [experiment 3](#experiment-3-layer-wise-analysis))
 
 
 ### Environment
@@ -51,7 +51,7 @@ Run vanilla *n-way* classification:
 ```
 
 #### Neuron-based Classification:
-This step requires the neuron labeling ([experiment 1](#1-run-neuron-labeling)) to be completed first.
+This step requires the neuron labeling ([experiment 1](#experiment-1-neuron-labeling)) to be completed first.
 
 To reproduce our study using neurons for classification inside representations:
 ```bash
