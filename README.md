@@ -1,4 +1,4 @@
-# Discover Visual concepts hidden in internal representation of infant model
+# Discovering Hidden Visual Concepts Beyond Linguistic Input in Infant Learning
 
 This repo contains the code and data to reproduce the results in our [paper](https://arxiv.org/abs/2501.05205) (CVPR 2025).
 
