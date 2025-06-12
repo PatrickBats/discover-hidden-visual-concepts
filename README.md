@@ -1,18 +1,22 @@
-# Discovering Hidden Visual Concepts Beyond Linguistic Input in Infant Learning
+# 🧠 Discovering Hidden Visual Concepts Beyond Linguistic Input in Infant Learning
 
-This repo contains the code and data to reproduce the results in our [paper](https://arxiv.org/abs/2501.05205) (CVPR 2025).
+🔗 [**Project Page**](https://kexueyi.github.io/webpage-discover-hidden-visual-concepts/)  
+📄 [**Paper (CVPR 2025)**](https://arxiv.org/abs/2501.05205)
 
-We explore: can a computational model
-that imitates the infant learning process develop **broader
-visual** concepts that extend beyond the vocabulary it has
-heard, **similar to how infants** naturally learn?
+---
 
-We analyze [CVCL](https://www.science.org/doi/10.1126/science.adi1374) (a infant-inspired multimodal model) published in Science by Vong et al. 
+Can a computational model that imitates infant learning develop **broader visual concepts** beyond the vocabulary it has heard — **similar to how infants naturally learn**?
 
-Key findings:
-- This infant model has developed a **broader understanding of visual concepts** beyond the linguistic training inputs, akin to real infant. 
-- **Neurons** in this model can **classify** visual concepts **without additional training**.
-- **Difference in representations** between infant model and other broadly-trained models (e.g., CLIP, ImageNet models) 
+We explore this question using the [**CVCL** model](https://www.science.org/doi/10.1126/science.adi1374) (a multimodal infant-inspired model) proposed by Vong et al., published in *Science*.
+
+---
+
+## 🔍 Key Findings
+
+- 🧒 The infant model develops a **broader understanding of visual concepts** than those found in its linguistic training input.
+- 🧠 Certain **neurons** in the model can **classify visual concepts** **without additional training**.
+- 🔄 There are clear **differences in representations** between this infant model and broadly-trained models such as **CLIP** and **ImageNet-based models**.
+
 
 ## Setup
 ### Dataset
