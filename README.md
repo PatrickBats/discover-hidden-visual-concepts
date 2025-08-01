@@ -112,10 +112,10 @@ Many thanks to the researchers and contributors behind these resources that made
 🥳 We appreciate your interest in our work! If you find our study helpful, please cite the following:
 ```bibtex
 @inproceedings{ke2025discovering,
-  author = {Xueyi Ke and Satoshi Tsutsui and Yayun Zhang and Bihan Wen},
-  title = {Discovering Hidden Visual Concepts Beyond Linguistic Input in Infant Learning},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-  year = {2025},
-  note = {To appear}
+  title={Discovering hidden visual concepts beyond linguistic input in Infant learning},
+  author={Ke, Xueyi and Tsutsui, Satoshi and Zhang, Yayun and Wen, Bihan},
+  booktitle={Proceedings of the Computer Vision and Pattern Recognition Conference},
+  pages={4343--4352},
+  year={2025}
 }
 ```
